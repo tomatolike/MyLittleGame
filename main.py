@@ -2,6 +2,8 @@ from GameClass import *
 from Game import *
 import socket
 import _thread
+from multiprocessing import Lock
+import time
 
 Game = Game()
 Game.initialization()
@@ -18,6 +20,7 @@ class MainConnect:
 		f.writelines("连接点建立中……\n")
 		self.c = c
 		self.addr = addr
+		self.mutex = Lock()
 		self.actor = None
 		print("连接点建立结束！")
 		f.writelines("连接点建立结束！\n")
@@ -27,10 +30,13 @@ class MainConnect:
 		self.c.send(str.encode(s))
 
 	def inputs(self, s=""):
+		self.mutex.acquire()
 		if s != "":
 			#s = s+"\n"
 			self.c.send(str.encode(s))
 		x = bytes.decode(self.c.recv(1024))
+		self.mutex.release()
+		time.sleep(1)
 		return x
 
 	def login(self):

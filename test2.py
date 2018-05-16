@@ -2,8 +2,8 @@ import socket
 import _thread
 
 s = socket.socket()
-host = socket.gethostname()
-#host = "10.180.19.165"
+#host = socket.gethostname()
+host = '193.112.104.61'
 port = 12344
 
 #print("193.112.104.61",1234)

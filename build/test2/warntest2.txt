@@ -1,3 +1,4 @@
+missing module named nt - imported by os, ntpath, shutil, /Users/like/Desktop/TEST/MyLittleGame/test2.py
 missing module named org - imported by pickle, /Users/like/Desktop/TEST/MyLittleGame/test2.py
 excluded module named _frozen_importlib - imported by importlib, importlib.abc, /Users/like/Desktop/TEST/MyLittleGame/test2.py
 missing module named _frozen_importlib_external - imported by importlib._bootstrap, importlib, importlib.abc, /Users/like/Desktop/TEST/MyLittleGame/test2.py
@@ -6,7 +7,6 @@ missing module named java - imported by platform, /Users/like/Desktop/TEST/MyLit
 missing module named 'java.lang' - imported by platform, /Users/like/Desktop/TEST/MyLittleGame/test2.py, xml.sax._exceptions
 missing module named vms_lib - imported by platform, /Users/like/Desktop/TEST/MyLittleGame/test2.py
 missing module named winreg - imported by platform, mimetypes, /Users/like/Desktop/TEST/MyLittleGame/test2.py, urllib.request
-missing module named nt - imported by os, ntpath, shutil, /Users/like/Desktop/TEST/MyLittleGame/test2.py
 missing module named msvcrt - imported by subprocess, /Users/like/Desktop/TEST/MyLittleGame/test2.py, getpass
 missing module named _winapi - imported by subprocess, /Users/like/Desktop/TEST/MyLittleGame/test2.py
 missing module named _dummy_threading - imported by dummy_threading, /Users/like/Desktop/TEST/MyLittleGame/test2.py
