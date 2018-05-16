@@ -38,8 +38,10 @@ class MainConnect:
 
 	def inputss(self,s=""):
 		self.actor.busy.acquire()
-		self.inputs(s)
+		x = self.inputs(s)
 		self.actor.busy.release()
+		time.sleep(0.5)
+		return x
 
 	def inputs(self, s=""):
 		self.mutex.acquire()
@@ -52,10 +54,10 @@ class MainConnect:
 		return x
 
 	def login(self):
-		answer = self.inputss("请输入角色名（账号）：")
+		answer = self.inputs("请输入角色名（账号）：")
 		for a in Actor.actorlist:
 			if a.name == answer and a.status == True:
-				answer = self.inputss("请输入密码：")
+				answer = self.inputs("请输入密码：")
 				if a.sec == answer:
 					self.actor = a
 					a.status = False
