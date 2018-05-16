@@ -6,22 +6,29 @@ import _thread
 Game = Game()
 Game.initialization()
 
+f = open('log.txt','w')
+
 print("世界建立完成！")
+f.writelines("世界建立完成！\n")
 
 class MainConnect:
 
 	def __init__(self,c,addr):
 		print("连接点建立中……")
+		f.writelines("连接点建立中……\n")
 		self.c = c
 		self.addr = addr
 		self.actor = None
 		print("连接点建立结束！")
+		f.writelines("连接点建立结束！\n")
 
 	def prints(self, s):
+		#s = s+"\n"
 		self.c.send(str.encode(s))
 
 	def inputs(self, s=""):
 		if s != "":
+			#s = s+"\n"
 			self.c.send(str.encode(s))
 		x = bytes.decode(self.c.recv(1024))
 		return x
@@ -36,8 +43,10 @@ class MainConnect:
 					a.status = False
 					a.net = self
 					print(a.name+"登录成功！")
+					f.writelines(a.name+"登陆成功！\n")
 					return True
 		print("登录失败")
+		f.writelines("登录失败\n")
 		return False
 
 
@@ -95,7 +104,7 @@ class MainConnect:
 					self.prints(self.actor.where.printplaces())
 					answer = self.inputs("请回复编号：");
 					to = int(answer)
-					if to < 0 or to > self.actor.where.placeaccount:
+					if to < 0 or to >= self.actor.where.placeaccount:
 						self.prints("好好说话行吗。")
 					else:
 						self.prints(self.actor.goto(1,to))
@@ -107,7 +116,7 @@ class MainConnect:
 					self.prints(world.printplaces())
 					answer = self.inputs("请回复编号：");
 					to = int(answer)
-					if to < 0 or to > world.placeaccount:
+					if to < 0 or to >= world.placeaccount:
 						self.prints("好好说话行吗？")
 					else:
 						self.prints(self.actor.goto(3,to))
@@ -123,7 +132,7 @@ class MainConnect:
 					continue
 				else:
 					whom = self.actor.where.actorcontain[to]
-					self.prints("你找到了"+whom.name+"\n"+whom.intro+"\n")
+					self.prints("你找到了"+whom.name+"\n")
 					self.prints("你想要：\n回复1：交谈\n回复2：战斗\n回复3：交易\n")
 
 					answer = self.inputs("请回复1~3：");
@@ -133,17 +142,30 @@ class MainConnect:
 							self.prints("你开始了交谈：\n")
 							Game.GetInLogic(self.actor,whom)
 							continue
-						elif type(whom) is Player:
+						elif type(whom) is Player and whom.status == False:
 							Game.GetInChat(self.actor,whom)
 							continue
 						else:
-							self.prints("这个人不存在！")
+							self.prints("这个人不存在或不在线！")
 					elif answer == "2":
-						self.prints("你开始了战斗！\n")
-						Game.GetInFight(self.actor,whom)
+						if type(whom) is NPC:
+							self.prints("你开始了战斗！\n")
+							Game.GetInFight(self.actor,whom)
+						elif type(whom) is Player and whom.status == False:
+							self.prints("你开始了战斗！\n")
+							Game.GetInFight(self.actor,whom)
+						else:
+							self.prints("这个人不存在或不在线！")
 					elif answer == "3":
-						self.prints("你开始了交易！\n")
-						Game.GetInTrade(self.actor,whom)
+						if type(whom) is NPC:
+							self.prints("你开始了交易！\n")
+							Game.GetInTrade(self.actor,whom)
+						elif type(whom) is Player and whom.status == False:
+							self.prints("你开始了交易！\n")
+							Game.GetInTrade(self.actor,whom)
+						else:
+							self.prints("这个人不存在或不在线！")
+								
 					else:
 						self.prints("好好说话！")
 
@@ -165,6 +187,7 @@ class MainConnect:
 
 			elif answer == "6":
 				self.prints("你暂时离开了大陆！")
+				self.actor.status = True
 				break
 
 			else:
@@ -174,6 +197,7 @@ class MainConnect:
 
 	def end(self):
 		print(self.actor.name+"退出游戏")
+		f.writelines(self.actor.name+"退出游戏\n")
 		cc = self.c
 		self.c = None
 		cc.close()
@@ -181,8 +205,10 @@ class MainConnect:
 
 def connectgame(c, addr):
 	print("尝试建立连接点")
+	f.writelines("尝试建立连接点"+"\n")
 	newplay = MainConnect(c,addr)
 	print("建立连接点完毕")
+	f.writelines("建立连接点完毕\n")
 	if newplay.login():
 		newplay.mainprocess()
 	else:
@@ -190,15 +216,17 @@ def connectgame(c, addr):
 		c.close()
 
 
+s = socket.socket()
 def startupserver():
-	s = socket.socket()
-	host = socket.gethostname()
+	#host = socket.gethostname()
+	host = '10.186.46.50'
 	port = 12344
 	s.bind((host,port))
 
 	s.listen(5)
 
 	print("开始监听")
+	f.writelines("开始监听\n")
 
 	while True:
 		c, addr = s.accept()
@@ -212,14 +240,18 @@ def startupserver():
 
 try:
 	print("尝试建立服务器")
+	f.writelines("尝试建立服务器\n")
 	_thread.start_new_thread(startupserver, ())
 except:
 	print("服务器建立失败")
+	f.writelines("服务器建立失败\n")
 
 while True:
 	x = input()
 	if x == "stop":
+		s.close()
 		Game.save()
+		f.close()
 		exit()
 	if x == "save":
 		Game.save()
