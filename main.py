@@ -38,8 +38,9 @@ class MainConnect:
 
 	def inputss(self,s=""):
 		self.actor.busy.acquire()
-		self.inputs(s)
+		x  = self.inputs(s)
 		self.actor.busy.release()
+		return x
 
 	def inputs(self, s=""):
 		self.mutex.acquire()
