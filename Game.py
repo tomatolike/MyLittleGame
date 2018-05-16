@@ -840,7 +840,7 @@ class Game:
 
 	def swap(self,a,b,c):
 		if c == -1:
-			if a.repertory == None:
+			if a.repertory == None or a.repertory.account == 0:
 				return
 			x = random.randint(0,len(a.repertory.things)-1)
 			it = a.repertory.things[x]
