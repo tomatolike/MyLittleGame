@@ -696,7 +696,7 @@ class Game:
 				self.doattack(now,theother)
 			else:
 				self.prints(now,"你要做什么？\n回复1：攻击\n回复2：使用物品\n回复3：逃跑\n回复4：投降")
-				answer = self.inputs(now,"请回复1~3：")
+				answer = self.inputs(now,"请回复1~4：")
 				if answer == "1":
 					self.doattack(now,theother)
 				elif answer == "2":
