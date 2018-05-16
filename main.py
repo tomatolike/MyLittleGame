@@ -27,7 +27,9 @@ class MainConnect:
 
 	def prints(self, s):
 		#s = s+"\n"
+		self.mutex.acquire()
 		self.c.send(str.encode(s))
+		self.mutex.release()
 
 	def inputs(self, s=""):
 		self.mutex.acquire()
@@ -36,7 +38,7 @@ class MainConnect:
 			self.c.send(str.encode(s))
 		x = bytes.decode(self.c.recv(1024))
 		self.mutex.release()
-		time.sleep(1)
+		time.sleep(0.5)
 		return x
 
 	def login(self):

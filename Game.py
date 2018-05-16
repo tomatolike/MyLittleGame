@@ -637,6 +637,7 @@ class Game:
 
 		if type(b) is Player:
 			self.prints(b,"你和"+a.name+"进入了战斗！。")
+		self.prints(a,"等待对方进入战斗……")
 
 		turn = 1
 		while True:
