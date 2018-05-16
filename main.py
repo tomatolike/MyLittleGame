@@ -31,6 +31,16 @@ class MainConnect:
 		self.c.send(str.encode(s))
 		self.mutex.release()
 
+	def printss(self, s):
+		self.actor.busy.acquire()
+		self.prints(s)
+		self.actor.busy.release()
+
+	def inputss(self,s=""):
+		self.actor.busy.acquire()
+		self.inputs(s)
+		self.actor.busy.release()
+
 	def inputs(self, s=""):
 		self.mutex.acquire()
 		if s != "":
@@ -42,10 +52,10 @@ class MainConnect:
 		return x
 
 	def login(self):
-		answer = self.inputs("请输入角色名（账号）：")
+		answer = self.inputss("请输入角色名（账号）：")
 		for a in Actor.actorlist:
 			if a.name == answer and a.status == True:
-				answer = self.inputs("请输入密码：")
+				answer = self.inputss("请输入密码：")
 				if a.sec == answer:
 					self.actor = a
 					a.status = False
@@ -62,127 +72,127 @@ class MainConnect:
 
 		while True:
 
-			self.prints("\n\n#####################\n")
-			self.prints("欢迎来到 神秘大陆 ！")
-			self.prints("你要做什么？\n你可以选择：\n回复1：查看自己的信息\n回复2：前往一个地方\n回复3：找这里的人做事\n回复4：使用物品\n回复5：创造\n回复6：离开")
-			answer = self.inputs("请回复1~6：");
+			self.printss("\n\n#####################\n")
+			self.printss("欢迎来到 神秘大陆 ！")
+			self.printss("你要做什么？\n你可以选择：\n回复1：查看自己的信息\n回复2：前往一个地方\n回复3：找这里的人做事\n回复4：使用物品\n回复5：创造\n回复6：离开")
+			answer = self.inputss("请回复1~6：");
 
 			if answer == "1":
-				self.prints("你想查看：\n1：自己所在的位置；2：自己的基本信息；3：自己拥有的物品\n")
-				answer = self.inputs("请回复1~3：");
+				self.printss("你想查看：\n1：自己所在的位置；2：自己的基本信息；3：自己拥有的物品\n")
+				answer = self.inputss("请回复1~3：");
 
 				if answer == "1":
-					self.prints(self.actor.printwhere())
+					self.printss(self.actor.printwhere())
 					continue
 				elif answer == "2":
-					self.prints(self.actor.printbasic())
+					self.printss(self.actor.printbasic())
 					continue
 				elif answer == "3":
-					self.prints("你想查看：\n1：背包；2：身上穿的；\n")
-					answer = self.inputs("请回复1~2：");
+					self.printss("你想查看：\n1：背包；2：身上穿的；\n")
+					answer = self.inputss("请回复1~2：");
 
 					if answer == "1":
-						self.prints(self.actor.printrepertory())
+						self.printss(self.actor.printrepertory())
 						continue
 					elif answer == "2":
-						self.prints(self.actor.printequipment())
-						self.prints("\n卸下装备？1、是；2、否：")
-						answer = self.inputs()
+						self.printss(self.actor.printequipment())
+						self.printss("\n卸下装备？1、是；2、否：")
+						answer = self.inputss()
 						if answer == "1":
-							answer = self.inputs("卸下：1、头盔；2、盔甲；3、武器；4、鞋子：")
+							answer = self.inputss("卸下：1、头盔；2、盔甲；3、武器；4、鞋子：")
 							no = int(answer)
-							self.prints(self.actor.equipment.unequip(self.actor,no-1))
+							self.printss(self.actor.equipment.unequip(self.actor,no-1))
 						continue
 					else:
-						self.prints("好好说话行吗。")
+						self.printss("好好说话行吗。")
 				else:
-					self.prints("好好说话行吗。")
+					self.printss("好好说话行吗。")
 
 			
 			elif answer == "2":
-				self.prints("你想去：\n1：这里的地点；2：外面；3：其他城镇\n")
-				answer = self.inputs("请回复1~3：");
+				self.printss("你想去：\n1：这里的地点；2：外面；3：其他城镇\n")
+				answer = self.inputss("请回复1~3：");
 
 				if answer == "1":
 					if self.actor.where == None:
-						self.prints("你在天堂呢。")
+						self.printss("你在天堂呢。")
 						continue
 
-					self.prints("这里有如下一些地点：")
-					self.prints(self.actor.where.printplaces())
-					answer = self.inputs("请回复编号：");
+					self.printss("这里有如下一些地点：")
+					self.printss(self.actor.where.printplaces())
+					answer = self.inputss("请回复编号：");
 					to = int(answer)
 					if to < 0 or to >= self.actor.where.placeaccount:
-						self.prints("好好说话行吗。")
+						self.printss("好好说话行吗。")
 					else:
-						self.prints(self.actor.goto(1,to))
+						self.printss(self.actor.goto(1,to))
 				elif answer == "2":
-					self.prints(self.actor.goto(2,0))
+					self.printss(self.actor.goto(2,0))
 				elif answer == "3":
-					self.prints("这个世界有如下一些城镇：")
+					self.printss("这个世界有如下一些城镇：")
 					world = Objects.world
-					self.prints(world.printplaces())
-					answer = self.inputs("请回复编号：");
+					self.printss(world.printplaces())
+					answer = self.inputss("请回复编号：");
 					to = int(answer)
 					if to < 0 or to >= world.placeaccount:
-						self.prints("好好说话行吗？")
+						self.printss("好好说话行吗？")
 					else:
-						self.prints(self.actor.goto(3,to))
+						self.printss(self.actor.goto(3,to))
 
 			elif answer == "3":
-				self.prints("这里有这些人：\n")
-				self.prints(self.actor.where.printactors())
+				self.printss("这里有这些人：\n")
+				self.printss(self.actor.where.printactors())
 
-				answer = self.inputs("请回复编号：");
+				answer = self.inputss("请回复编号：");
 				to = int(answer)
 				if self.actor.where.actorcontain[to] == self.actor:
-					self.prints("自己找自己干嘛！")
+					self.printss("自己找自己干嘛！")
 					continue
 				else:
 					whom = self.actor.where.actorcontain[to]
-					self.prints("你找到了"+whom.name+"\n")
-					self.prints("你想要：\n回复1：交谈\n回复2：战斗\n回复3：交易\n")
+					self.printss("你找到了"+whom.name+"\n")
+					self.printss("你想要：\n回复1：交谈\n回复2：战斗\n回复3：交易\n")
 
-					answer = self.inputs("请回复1~3：");
+					answer = self.inputss("请回复1~3：");
 
 					if answer == "1":
 						if type(whom) is NPC:
-							self.prints("你开始了交谈：\n")
+							self.printss("你开始了交谈：\n")
 							Game.GetInLogic(self.actor,whom)
 							continue
 						elif type(whom) is Player and whom.status == False:
 							Game.GetInChat(self.actor,whom)
 							continue
 						else:
-							self.prints("这个人不存在或不在线！")
+							self.printss("这个人不存在或不在线！")
 					elif answer == "2":
 						if type(whom) is NPC:
-							self.prints("你开始了战斗！\n")
+							self.printss("你开始了战斗！\n")
 							Game.GetInFight(self.actor,whom)
 						elif type(whom) is Player and whom.status == False:
-							self.prints("你开始了战斗！\n")
+							self.printss("你开始了战斗！\n")
 							Game.GetInFight(self.actor,whom)
 						else:
-							self.prints("这个人不存在或不在线！")
+							self.printss("这个人不存在或不在线！")
 					elif answer == "3":
 						if type(whom) is NPC:
-							self.prints("你开始了交易！\n")
+							self.printss("你开始了交易！\n")
 							Game.GetInTrade(self.actor,whom)
 						elif type(whom) is Player and whom.status == False:
-							self.prints("你开始了交易！\n")
+							self.printss("你开始了交易！\n")
 							Game.GetInTrade(self.actor,whom)
 						else:
-							self.prints("这个人不存在或不在线！")
+							self.printss("这个人不存在或不在线！")
 								
 					else:
-						self.prints("好好说话！")
+						self.printss("好好说话！")
 
 			elif answer == "4":
 				Game.usething(self.actor)
 
 			elif answer == "5":
-				self.prints("你可以创造：\n回复1：在当前位置的新人物\n回复2：在当前地点下的新地点\n回复3：物品\n")
-				answer = self.inputs("请回复1~3：")
+				self.printss("你可以创造：\n回复1：在当前位置的新人物\n回复2：在当前地点下的新地点\n回复3：物品\n")
+				answer = self.inputss("请回复1~3：")
 
 				if answer == "1":
 					Game.createActor(self.actor)
@@ -191,15 +201,15 @@ class MainConnect:
 				elif answer == "3":
 					Game.createThing(self.actor)
 				else:
-					self.prints("好好说话。")
+					self.printss("好好说话。")
 
 			elif answer == "6":
-				self.prints("你暂时离开了大陆！")
+				self.printss("你暂时离开了大陆！")
 				self.actor.status = True
 				break
 
 			else:
-				self.prints("好好说话。")
+				self.printss("好好说话。")
 
 		self.end()
 

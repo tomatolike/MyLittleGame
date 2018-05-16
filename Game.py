@@ -455,11 +455,14 @@ class Game:
 		return a.net.inputs(s)
 
 	def GetInLogic(self, a, b):
+		a.busy.acquire()
 		if b.logic == None:
 			self.prints(a,b.name+"是一个沉默寡言的人。")
+			a.busy.release()
 			return
 		if not (b.logic.orders):
 			self.prints(a,b.name+"是一个沉默寡言的人。")
+			a.busy.release()
 			return
 		action = b.logic.orders[0]
 		while True:
@@ -502,16 +505,23 @@ class Game:
 			else:
 				self.prints(a,b.name+"不知道在干嘛。")
 				break
+		a.busy.release()
 
 	def GetInChat(self, a, b):
+		a.busy.acquire()
+		b.busy.acquire()
 		self.prints(b,a.name+"想和你交谈，同意吗？")
 		answer = self.inputs(b,"回复1：拒绝；回复2：同意：")
 		if answer == "1":
 			self.prints(a,"对方拒绝了。")
+			a.busy.release()
+			b.busy.release()
 			return
 		elif answer != "2":
 			self.prints(b,"乱输入！就当你拒绝了！")
 			self.prints(a,"对方拒绝了。")
+			a.busy.release()
+			b.busy.release()
 			return
 		else:
 			self.prints(a,"你和"+b.name+"进入了交谈")
@@ -524,6 +534,8 @@ class Game:
 			if answer == "exit":
 				self.prints(a,"你退出了交谈")
 				self.prints(b,"对方退出了交谈")
+				a.busy.release()
+				b.busy.release()
 				return
 			self.prints(b,a.name+"说："+answer)
 			self.prints(a,"请"+b.name+"发言！")
@@ -532,21 +544,28 @@ class Game:
 			if answer == "exit":
 				self.prints(b,"你退出了交谈")
 				self.prints(a,"对方退出了交谈")
+				a.busy.release()
+				b.busy.release()
 				return
 			self.prints(a,b.name+"说："+answer)
 
 
 	def GetInTrade(self, a, b):
-
+		a.busy.acquire()
 		if type(b) is Player:
+			b.busy.acquire()
 			self.prints(b,a.name+"想和你交易，是否同意？")
 			answer = self.inputs(b,"回复1：拒绝；回复2：同意：")
 			if answer == "1":
 				self.prints(a,"对方拒绝了。")
+				a.busy.release()
+				b.busy.release()
 				return
 			elif answer != "2":
 				self.prints(b,"乱输入！就当你拒绝了！")
 				self.prints(a,"对方拒绝了。")
+				a.busy.release()
+				b.busy.release()
 				return
 			else:
 				self.prints(a,"你和"+b.name+"进入了交易。")
@@ -572,9 +591,14 @@ class Game:
 					price = -1
 				if price > a.money:
 					self.prints(a,"没钱别玩儿。")
+					a.busy.release()
+					if type(b) is Player:
+						b.busy.release()
 					return
 				if no >= len(b.repertory.things) or no < 0:
 					self.prints(a,"别乱输入。")
+					if type(b) is Player:
+						b.busy.release()
 					return
 
 				if type(b) is NPC:
@@ -593,6 +617,9 @@ class Game:
 						self.swap(b,a,no)
 						a.money -= price
 						b.money += price
+				a.busy.release()
+				if type(b) is Player:
+					b.busy.release()
 			elif answer == "2":
 				self.prints(a,"你有这些东西：")
 				self.prints(a,a.repertory.listall())
@@ -610,9 +637,15 @@ class Game:
 					price = -1
 				if price < b.money:
 					self.prints(a,"他没有那么多钱。")
+					a.busy.release()
+					if type(b) is Player:
+						b.busy.release()
 					return
 				if no < 0 or no >= len(a.repertory.things):
 					self.prints(a,"别乱输入。")
+					a.busy.release()
+					if type(b) is Player:
+						b.busy.release()
 					return
 
 				if type(b) is NPC:
@@ -631,13 +664,24 @@ class Game:
 						self.swap(a,b,no)
 						a.money += price
 						b.money -= price
+				a.busy.release()
+				if type(b) is Player:
+					b.busy.release()
+			else:
+				self.prints(a,"别乱输入。")
+				a.busy.release()
+				if type(b) is Player:
+					self.prints(b,"对方退出了")
+					b.busy.release()
 		
 
 	def GetInFight(self, a, b):
-
-		if type(b) is Player:
-			self.prints(b,"你和"+a.name+"进入了战斗！。")
+		a.busy.acquire()
 		self.prints(a,"等待对方进入战斗……")
+		if type(b) is Player:
+			b.busy.acquire()
+			self.prints(b,"你和"+a.name+"进入了战斗！。")
+		self.prints(a,"对方进入战斗！")
 
 		turn = 1
 		while True:
@@ -661,11 +705,15 @@ class Game:
 					ok = self.escape(now,theother)
 					if ok == 1:
 						self.prints(now,"你逃走了")
+						now.busy.release()
+						if type(theother) is Player:
+							self.prints(theother,"对方逃走了")
+							theother.busy.release()
 						return
 					else:
 						self.prints(now,"你没逃走。")
 				elif answer == "4":
-					new.hp = 0
+					now.hp = 0
 					self.prints(now,"你投降了。")
 					if type(theother) is Player:
 						self.prints(theother,"对方投降了。")
@@ -674,8 +722,9 @@ class Game:
 
 			turn = 1 - turn
 
-			if new.hp <= 0:
-				self.winer(theother, now)
+			if now.hp <= 0:
+				self.winner(theother, now)
+				break
 
 			if theother.hp <=0:
 				self.winner(now, theother)
@@ -687,6 +736,10 @@ class Game:
 				if type(theother) is not NPC:
 					self.prints(theother,"\n" + now.name + " hp :" + str(now.hp))
 					self.prints(theother,theother.name + " hp :" + str(theother.hp) + "\n")
+
+		a.busy.release()
+		if type(b) is Player:
+			b.busy.release()
 
 
 	def doattack(self, a, b):
@@ -809,6 +862,7 @@ class Game:
 			b.repertory.addup(it)
 
 	def createActor(self, a):
+		a.busy.acquire()
 		new = NPC()
 		answer = self.inputs(a,"请输入人物名称：")
 		new.name = answer
@@ -894,6 +948,7 @@ class Game:
 
 
 		self.prints(a,"人物建立完毕。")
+		a.busy.release()
 
 	def buildAction(self, a, b):
 		self.prints(b,"针对"+a+"要做什么？")
@@ -972,6 +1027,7 @@ class Game:
 		return action
 
 	def createPlace(self, a):
+		a.busy.acquire()
 		new = Places()
 		answer = self.inputs(a,"请输入地点名称：")
 		new.name = answer
@@ -983,8 +1039,10 @@ class Game:
 		new.intro = answer
 
 		self.prints(a,"地点建立完毕。")
+		a.busy.release()
 
 	def createThing(self, a):
+		a.busy.acquire()
 		self.prints(a,"请输入物品种类：\n1、头盔\n2、盔甲\n3、武器\n4、鞋子\n5、药物\n6、其他\n")
 		answer = self.inputs(a,"请回复1~6：")
 
@@ -1121,6 +1179,7 @@ class Game:
 
 		else:
 			self.prints(a,"好好说话。")
+			a.busy.release()
 			return
 
 		while True:
@@ -1143,6 +1202,7 @@ class Game:
 					Actor.actorlist[no].repertory.addup(new)
 
 		self.prints(a,"物品建立完毕。")
+		a.busy.release()
 
 
 

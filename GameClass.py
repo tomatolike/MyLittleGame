@@ -1,3 +1,4 @@
+from multiprocessing import Lock
 class Test:
 	word = "test"
 
@@ -161,6 +162,7 @@ class Player(Actor):
 		self.status = True
 		self.net = None
 		self.waiting = False
+		self.busy = Lock()
 
 	def printbasic(self): # Print basic info of him
 		re = ""
