@@ -62,8 +62,8 @@ class MainConnect:
 					self.actor = a
 					a.status = False
 					a.net = self
-					print(a.name+"登录成功！")
-					f.writelines(a.name+"登陆成功！\n")
+					print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())+a.name+"登录成功！")
+					f.writelines(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())+a.name+"登陆成功！\n")
 					return True
 		print("登录失败")
 		f.writelines("登录失败\n")
@@ -216,8 +216,8 @@ class MainConnect:
 		self.end()
 
 	def end(self):
-		print(self.actor.name+"退出游戏")
-		f.writelines(self.actor.name+"退出游戏\n")
+		print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())+self.actor.name+"退出游戏")
+		f.writelines(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())+self.actor.name+"退出游戏\n")
 		cc = self.c
 		self.c = None
 		cc.close()

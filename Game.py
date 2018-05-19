@@ -1,5 +1,6 @@
 from GameClass import *
 import random
+import time
 
 class Game:
 
@@ -405,7 +406,7 @@ class Game:
 					f.writelines(str(i.equipment.foot.id)+"\n")
 				else:
 					f.writelines("-1"+"\n")
-				f.writelines(str(i.money)+"\n")
+				f.writelines(str(int(i.money))+"\n")
 				f.writelines(str(i.hp)+"\n")
 				f.writelines(str(i.level)+"\n")
 				f.writelines(str(i.logic.orders[0].id)+"\n")
@@ -435,7 +436,7 @@ class Game:
 					f.writelines(str(i.equipment.foot.id)+"\n")
 				else:
 					f.writelines("-1"+"\n")
-				f.writelines(str(i.money)+"\n")
+				f.writelines(str(int(i.money))+"\n")
 				f.writelines(str(i.hp)+"\n")
 				f.writelines(str(i.level)+"\n")
 				f.writelines(str(i.exp)+"\n")
@@ -455,6 +456,7 @@ class Game:
 		return a.net.inputs(s)
 
 	def GetInLogic(self, a, b):
+		print(time.strftime("%Y-%m-%d %H:%M:%S: ", time.localtime())+a.name+" and "+b.name+" GetInLogic!")
 		a.busy.acquire()
 		if b.logic == None:
 			self.prints(a,b.name+"是一个沉默寡言的人。")
@@ -508,6 +510,7 @@ class Game:
 		a.busy.release()
 
 	def GetInChat(self, a, b):
+		print(time.strftime("%Y-%m-%d %H:%M:%S: ", time.localtime())+a.name+" and "+b.name+" GetInChat!")
 		a.busy.acquire()
 		b.busy.acquire()
 		self.prints(b,a.name+"想和你交谈，同意吗？")
@@ -551,6 +554,7 @@ class Game:
 
 
 	def GetInTrade(self, a, b):
+		print(time.strftime("%Y-%m-%d %H:%M:%S: ", time.localtime())+a.name+" and "+b.name+" GetInTrade!")
 		a.busy.acquire()
 		if type(b) is Player:
 			b.busy.acquire()
@@ -676,6 +680,7 @@ class Game:
 		
 
 	def GetInFight(self, a, b):
+		print(time.strftime("%Y-%m-%d %H:%M:%S: ", time.localtime())+a.name+" and "+b.name+" GetInFight!")
 		a.busy.acquire()
 		self.prints(a,"等待对方进入战斗……")
 		if type(b) is Player:
