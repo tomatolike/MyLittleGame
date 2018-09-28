@@ -16,6 +16,26 @@ Players can have some kinds of things to do to enjoy the stories.
 
 Basic fight, communication and trade system has been build.
 
+#### Some introductions to the game mechanism
+
+The main.py is the Net I/O logic of the server.
+The Game.py is the running logic of game world.
+The GameClass.py is the data logic of the game.
+
+The world is called '世界'. There are some towns in the world. Each town have its own buildings like a bar. The world, the town, the building are all 'Place'.
+
+The players and NPCs are both 'Actor'. NPCs have their logic when they interect with players. 'Actor' can be in any 'Place'
+
+There are 'Thing' in the world. Like 'Equipment' and 'Medic'. They can be used by 'Actor' or trade between 'Actor'.
+
+'Actor' can communicate with each other, between a player and a player or between a player and an NPC but not between an NPC and an NPC.
+
+'Actor' can fight with each other, between a player and a player or between a player and an NPC but not between an NPC and an NPC.
+
+'Actor' can trade with each other, between a player and a player or between a player and an NPC but not between an NPC and an NPC.
+
+Players can create 'Place', 'Thing', NPC and the 'Logic' of NPC. The 'Logic' is a tree of 'Action'. 'Action' is what the NPC will do. These can all be create by players. 
+
 ### Stage tow is waiting
 
 The logic should be more general, and players should be able to design more complecated logics.
