@@ -8,33 +8,43 @@ class Test:
 	def printword(self):
 		print(self.word)
 
-
+# All kinds of class are inherited from this class
+# Because all things or places or charactors are objects in this world
 class Objects:
+	# The main usage of this class is to keep a list to all objects in the world
+	# Like a god
 	objlist = []
 	maxid = 0
 	world = None
 
 	def __init__(self):
 		self.objlist.append(self)
+		# Each objects in the world will be attached with a universially unique id
+		# In the eyes of god, you are no different with a cup
 		self.id = Objects.maxid + 1
 		Objects.maxid = Objects.maxid + 1
-		#print(Objects.maxid)
 
+# The architecture of places are like a tree.
+# The root of the tree is '世界'
+# Then, the second level of the tree is different towns, like 'Chengdu'
+# Each town have some sub-places like a bar.
+# Maybe in the future the second level will be province or continent
 class Places(Objects):
 	townlist = [] # All the towns
-	allplaces = []
+	allplaces = [] # All the places
 
 	def __init__(self):
 		super(Places,self).__init__()
 		self.name = "name"
-		self.outside = None # Where the outside is
-		self.placescontain = [] # The places it contains
+		self.outside = None # Where the outside is. For example, the outside of a bar is a town
+		self.placescontain = [] # The places it contains. For example, a town main contain a bar
 		self.placeaccount = 0 # How many places it contains
-		self.actorcontain = [] # The actors it contains
+		self.actorcontain = [] # The actors it contains. For example, 'Chengdu' may contain an NPC called 'LIKE'
 		self.actoraccount = 0 # How many actors it contains
 		self.intro = "intro"
 		Places.allplaces.append(self)
 
+	# Print all sub-places in this place. A little like the 'ls' order in Linux file system.
 	def printplaces(self):
 		re = ""
 		if self.placeaccount == 0:
@@ -44,6 +54,8 @@ class Places(Objects):
 				re += "编号："+str(i)+"；名字："+self.placescontain[i].name+"\n"
 		return re
 
+	# Print all actors in the place now, including both NPCs and players.
+	# This list may change from time to time, since the players will move from places to places
 	def printactors(self):
 		re = ""
 		if self.actoraccount == 0:
@@ -53,20 +65,24 @@ class Places(Objects):
 				re += "编号："+str(i)+"；名字："+self.actorcontain[i].name+"\n"
 		return re
 
+	# Delete an actor from the list of actors in the place. Maybe a player has moved away.
 	def delone(self, actor):
 		self.actoraccount = self.actoraccount - 1
 		self.actorcontain.remove(actor)
 
+	# Add an actor to the list of actors in the place.
 	def addone(self, actor):
 		self.actoraccount = self.actoraccount + 1
 		self.actorcontain.append(actor)
 		actor.where = self
 
+	# Add a sub-place
 	def addplace(self, place):
 		self.placeaccount = self.placeaccount + 1
 		self.placescontain.append(place)
 		place.outside = self
-
+	
+	# Delete a sub-place
 	def delplace(self, place):
 		self.placeaccount = self.placeaccount - 1
 		self.placescontain.remove(place)
@@ -74,6 +90,10 @@ class Places(Objects):
 			Places.townlist.remove(place)
 		place.outside = None
 
+# Actors. Both player and NPC are actors
+# The only difference is that: players need the result of Network I/O to do action; NPCs follow the logic which we create.
+# There is no relationship or 'love ratio' between players. Maybe we will add in the future.
+# Anyway, Galagame should also be realised in our game.
 class Actor(Objects):
 	actorlist = []
 
@@ -142,7 +162,7 @@ class Actor(Objects):
 		re += "你来到了："+self.where.name+"\n"
 		return re
 
-
+# As I said, NPC has logic.
 class NPC(Actor):
 
 	def __init__(self):
@@ -151,7 +171,8 @@ class NPC(Actor):
 		self.logic = None # The logic of the npc
 		self.intro = "intro"
 	
-
+# The players have more parametors.
+# The level of players will increase.
 class Player(Actor):
 	
 	def __init__(self):
@@ -179,6 +200,10 @@ class Player(Actor):
 			self.exp -= (self.level+1)*100
 			self.level += 1
 
+# Hey! Why do this class not inherit from Object class?
+# This is because the repertory is an abstract class attached with each actor.
+# This is no actually a packet on the back of each actor. You may image it like a magic packet.
+# All the 'Thing's will be managed in this class.
 class Repertory():
 
 	def __init__(self):
@@ -210,6 +235,10 @@ class Repertory():
 			self.amount.append(1)
 		self.account = len(self.things)
 
+# This is also an abstract class.
+# This class is not an equipment class.
+# It manages the equipments which the actor wear on body.
+# In Chinese, '装备栏'
 class Equipment():
 	
 	def __init__(self):
@@ -295,6 +324,7 @@ class Equipment():
 			re += "卸下失败"+"\n"
 		return re
 
+# 'Thing'!
 class Thing(Objects):
 	allthingslist = []
 	
@@ -313,6 +343,7 @@ class Thing(Objects):
 			re += "编号"+str(i)+"："+Thing.allthingslist[i].name+"\n"
 		return re
 
+# 'Equipment' is 'Thing'
 class Equip(Thing):
 	
 	def __init__(self):
@@ -320,26 +351,30 @@ class Equip(Thing):
 		self.e_type = 0 # Where to equip it
 		self.useage = 2
 
+# 'Protect' is 'Equipment'
 class Protect(Equip):
 	
 	def __init__(self):
 		super(Protect,self).__init__()
 		self.amount = 0 # How much it can protect
 
-
+# 'Weapon' is 'Equipment'
 class Weapon(Equip):
 	
 	def __init__(self):
 		super(Weapon,self).__init__()
 		self.attack = 0 # How much it can hurt
 
-
+# 'Shoes' is 'Equipment'
+# This kind of equipments are mainly connected with the success of escaping!
 class Shoes(Equip):
 	
 	def __init__(self):
 		super(Shoes,self).__init__()
 		self.quick = 0 # How fast it can run
 
+# 'Medic' is 'Thing'
+# Used to add HP
 class Medic(Thing):
 
 	def __init__(self):
@@ -347,6 +382,9 @@ class Medic(Thing):
 		self.useage = 1
 		self.amount = 0 # How much hp or fast it can cure
 
+# Misson!
+# But I have not finished the misson mechanism yet.
+# Only a data class, no function yet.
 class Misson(Objects):
 	
 	def __init__(self):
@@ -354,12 +392,22 @@ class Misson(Objects):
 		self.intro = "intro"
 		self.award = None # What can get from complete misson
 
-
+# Logic!
+# Each logic object is owned by an NPC
+# Each logic object is a chain of actions
 class Logic():
 	
 	def __init__(self):
+		# Although there is a list, it is a mistake.
+		# Actually, the first action is orders[0], but the second action is not orders[1].
+		# This is because the actions are linked as a tree not a chain.
+		# The second action (actuall, second actions), are reactions of the first action.
+		# So, the list only contain one action, the first action, oders[0].
 		self.orders = [] # The orders
 
+# Actions!
+# As I said, the actions are connected as a tree.
+# The reactions are just like the sons of a tree node.
 class Action(Objects):
 	actionlist = []
 
@@ -368,6 +416,14 @@ class Action(Objects):
 		self.say = "say" # Say something
 		self.answers = [] # Answers supported
 		self.reactions = [] # Reaction to different answer
+		# The first kind of action, with actiontype=0, is just saying something. The reactions of this type can be all kinds of actions.
+		# The second kind of action, with actiontype=1, is asking a question. The reactions of this type can be all kinds of actions.
+		# The third kind of action, with actiontype=2, is fighting with the player. No reaction.
+		# The fourth kind of action, with actiontype=3, is requiring a 'Thing' from the player. This action can have two reactions, success or failure, but no limitation on reaction type.
+		# The fifth kind of action, with actiontype=4, is ending the conversation. No reaction.
+		# If we can define more kind of actions! We can make the game more interesting!
+		# And, may be in the future, we will used machine learing to simulate the logic of NPCs.
+		# Not just follow the logic tree.
 		self.actiontype = 0 # The type of action
 		Action.actionlist.append(self)
 

@@ -5,6 +5,7 @@ import _thread
 from multiprocessing import Lock
 import time
 
+# Initialize the world!
 Game = Game()
 Game.initialization()
 
@@ -12,6 +13,9 @@ f = open('log.txt','w')
 
 print("世界建立完成！")
 f.writelines("世界建立完成！\n")
+
+# This is the server class
+# The logic of communication with client is here
 
 class MainConnect:
 
@@ -25,6 +29,10 @@ class MainConnect:
 		print("连接点建立结束！")
 		f.writelines("连接点建立结束！\n")
 
+	# I have to explain the relationship of these print and input functions
+	# I rewrite the print/input functions as printss/inputss
+	# However, we need mutex lock or the messages will crush togethor.
+	# So I used prints/inputs to use mutex locks.
 	def prints(self, s):
 		#s = s+"\n"
 		self.mutex.acquire()

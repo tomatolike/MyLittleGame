@@ -500,6 +500,9 @@ class Game:
 			return
 
 		# Then, the NPC will act from the the first 'Action'
+		# The detialed defination of each type of logic will be illustrated in GameClass.py
+		# The actions are connected by reactions to each action, like a linked list
+		# The detailed data model will be illustrated in GameClass.py
 		action = b.logic.orders[0]
 		while True:
 			if action.actiontype == 0:
@@ -543,6 +546,7 @@ class Game:
 				break
 		a.busy.release()
 
+	# This function is used by players to communicate with each other
 	def GetInChat(self, a, b):
 		print(time.strftime("%Y-%m-%d %H:%M:%S: ", time.localtime())+a.name+" and "+b.name+" GetInChat!")
 		a.busy.acquire()
@@ -586,7 +590,7 @@ class Game:
 				return
 			self.prints(a,b.name+"说："+answer)
 
-
+	# This function is used when a player want to trade with another player or NPC.
 	def GetInTrade(self, a, b):
 		print(time.strftime("%Y-%m-%d %H:%M:%S: ", time.localtime())+a.name+" and "+b.name+" GetInTrade!")
 		a.busy.acquire()
@@ -712,7 +716,7 @@ class Game:
 					self.prints(b,"对方退出了")
 					b.busy.release()
 		
-
+	# This function is used when a player get into fight with another player or NPC.
 	def GetInFight(self, a, b):
 		print(time.strftime("%Y-%m-%d %H:%M:%S: ", time.localtime())+a.name+" and "+b.name+" GetInFight!")
 		a.busy.acquire()
@@ -780,7 +784,8 @@ class Game:
 		if type(b) is Player:
 			b.busy.release()
 
-
+	# This function is used to caculate the hurt for an attack action
+	# To simulate the reality, the too fighters will both get hurt no matter who is attacking and who is defending
 	def doattack(self, a, b):
 		if a.equipment == None:
 			attack = 0
@@ -807,6 +812,8 @@ class Game:
 
 		b.hp = b.hp - attack
 
+	# This function is used when a user want to use some tool
+	# Now, only tool adding HP or equipments can be used (2018.9.28)
 	def usething(self,a):
 		if a.repertory == None:
 			self.prints(a,"你没有背包。")
@@ -847,6 +854,8 @@ class Game:
 		else:
 			self.prints(a,"坏东西。")
 
+	# This function is used when the player decide to escape from a fight
+	# However, a successful escaption is under some requirements, mainly the speed limitation
 	def escape(self, a, b):
 		if a.equipment != None:
 			if a.equipment.foot != None:
@@ -858,6 +867,7 @@ class Game:
 					return 1
 		return 0
 
+	# This function is used to decide the winner of a fight
 	def winner(self, a, b):
 		if type(a) is NPC:
 			a.hp = 100 + a.level
@@ -877,6 +887,9 @@ class Game:
 
 		self.swap(b,a,-1)
 
+	# This function is used after a fight
+	# When a fight is over, some 'Thing' will be automatically moved from loser's packet to winner's packet
+	# Like an award to winner
 	def swap(self,a,b,c):
 		if c == -1:
 			if a.repertory == None or a.repertory.account == 0:
@@ -900,6 +913,7 @@ class Game:
 				self.prints(b,"你获得了"+it.name)
 			b.repertory.addup(it)
 
+	# This function is used by player to create an NPC.
 	def createActor(self, a):
 		a.busy.acquire()
 		new = NPC()
@@ -942,6 +956,9 @@ class Game:
 
 		self.prints(a,"\n现在开始建立人物逻辑：\n")
 		new.logic = Logic()
+		# Here we will build the logic, like a chain of actions
+		# Very interesting
+		# Most creative part in this game!
 		x = self.buildAction("一开始", a)
 		new.logic.orders.append(x)
 		self.prints(a,"\n人物逻辑建立完毕。\n")
@@ -989,6 +1006,10 @@ class Game:
 		self.prints(a,"人物建立完毕。")
 		a.busy.release()
 
+	# This function is used to build an anction
+	# The detailed defination of each type of actions will be illustrated in GameClass.py
+	# The actions are connected by reactions, like a linked list
+	# Actually more like a tree
 	def buildAction(self, a, b):
 		self.prints(b,"针对"+a+"要做什么？")
 		action = Action()
@@ -1065,6 +1086,7 @@ class Game:
 
 		return action
 
+	# This function is used by a player to create a place
 	def createPlace(self, a):
 		a.busy.acquire()
 		new = Places()
@@ -1080,6 +1102,7 @@ class Game:
 		self.prints(a,"地点建立完毕。")
 		a.busy.release()
 
+	# This function is used by a player to create a 'Thing'
 	def createThing(self, a):
 		a.busy.acquire()
 		self.prints(a,"请输入物品种类：\n1、头盔\n2、盔甲\n3、武器\n4、鞋子\n5、药物\n6、其他\n")
